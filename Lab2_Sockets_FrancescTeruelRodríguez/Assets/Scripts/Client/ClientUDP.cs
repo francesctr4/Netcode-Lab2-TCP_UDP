@@ -12,12 +12,13 @@ public class ClientUDP : MonoBehaviour
     public GameObject UItextObj;
     TextMeshProUGUI UItext;
     string clientText;
+    string serverIPAddress;
 
     // Start is called before the first frame update
     void Start()
     {
         UItext = UItextObj.GetComponent<TextMeshProUGUI>();
-
+        serverIPAddress = GetClientInputIPAddress();
     }
     public void StartClient()
     {
@@ -39,7 +40,7 @@ public class ClientUDP : MonoBehaviour
         //Again, initialize the socket
         
         int port = 9050;
-        string localIP = GetLocalIPAddress();
+        string localIP = serverIPAddress;
         IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(localIP), port);
 
         server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -80,18 +81,9 @@ public class ClientUDP : MonoBehaviour
         clientText = clientText += $"Message received from {Remote.ToString()}:" + "\n" + Encoding.ASCII.GetString(data, 0, recv) + "\n";
     }
 
-    public static string GetLocalIPAddress()
+    public static string GetClientInputIPAddress()
     {
-        var host = Dns.GetHostEntry(Dns.GetHostName());
-        foreach (var ip in host.AddressList)
-        {
-            // We are looking for an IPv4 address (since most networks use IPv4)
-            if (ip.AddressFamily == AddressFamily.InterNetwork)
-            {
-                return ip.ToString();
-            }
-        }
-        throw new Exception("No IPv4 address found for this machine.");
+        return PlayerPrefs.GetString("ServerIP", "No IP");
     }
 
 }
