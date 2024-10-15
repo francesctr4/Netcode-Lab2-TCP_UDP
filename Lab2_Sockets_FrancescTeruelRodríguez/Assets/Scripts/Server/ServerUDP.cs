@@ -46,7 +46,6 @@ public class ServerUDP : MonoBehaviour
     void Update()
     {
         UItext.text = serverText;
-
     }
 
  
