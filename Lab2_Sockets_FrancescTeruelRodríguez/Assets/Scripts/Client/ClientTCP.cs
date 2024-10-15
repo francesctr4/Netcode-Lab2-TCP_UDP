@@ -8,9 +8,10 @@ using System;
 
 public class ClientTCP : MonoBehaviour
 {
-    public GameObject UItextObj;
-    TextMeshProUGUI UItext;
-    string clientText;
+    public GameObject UItextObj;  // Reference to the UI text object
+    public TMP_InputField messageInputField; // Reference to the input field for sending messages
+    public TextMeshProUGUI UItext; // TextMeshProUGUI component to display messages
+    string clientText = "";
     Socket server;
     string serverIPAddress;
 
@@ -24,24 +25,20 @@ public class ClientTCP : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Display the messages received from the server
         UItext.text = clientText;
-
     }
 
+    // Starts the client and connects to the server
     public void StartClient()
     {
-        Thread connect = new Thread(Connect);
-        connect.Start();
+        Thread connectThread = new Thread(Connect);
+        connectThread.Start();
     }
+
+    // Establish a connection with the server
     void Connect()
     {
-        //TO DO 2
-        //Create the server endpoint so we can try to connect to it.
-        //You'll need the server's IP and the port we binded it to before
-        //Also, initialize our server socket.
-        //When calling connect and succeeding, our server socket will create a
-        //connection between this endpoint and the server's endpoint
-
         int port = 9050;
         string localIP = serverIPAddress;
         IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(localIP), port);
@@ -49,44 +46,66 @@ public class ClientTCP : MonoBehaviour
         server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         server.Connect(ipep);
 
-        //TO DO 4
-        //With an established connection, we want to send a message so the server aacknowledges us
-        //Start the Send Thread
-        Thread sendThread = new Thread(Send);
-        sendThread.Start();
+        //// Start threads for sending and receiving messages
+        //Thread sendThread = new Thread(Send); // Sending is manual, so this will wait for user input
+        //sendThread.Start();
 
-        //TO DO 7
-        //If the client wants to receive messages, it will have to start another thread. Call Receive()
         Thread receiveThread = new Thread(Receive);
         receiveThread.Start();
-
     }
-    void Send()
-    {
-        //TO DO 4
-        //Using the socket that stores the connection between the 2 endpoints, call the TCP send function with
-        //an encoded message
-        // Sending data
 
-        string message = "Hello Server";
-        byte[] messageBuffer = Encoding.ASCII.GetBytes(message);
+    // Called when the Send button is clicked in the UI
+    public void OnSendButtonClick()
+    {
+        // Get the text from the input field and send it to the server
+        string message = messageInputField.text;
+        if (!string.IsNullOrEmpty(message))
+        {
+            SendMessageToServer(message);
+            messageInputField.text = ""; // Clear the input field after sending the message
+        }
+    }
+
+    // Sends a custom message to the server
+    void SendMessageToServer(string message)
+    {
+        byte[] messageBuffer = Encoding.ASCII.GetBytes(PlayerPrefs.GetString("ClientName") + ": " + message);
         server.Send(messageBuffer);
     }
 
-    //TO DO 7
-    //Similar to what we already did with the server, we have to call the Receive() method from the socket.
+    // Receives messages from the server
     void Receive()
     {
         byte[] data = new byte[1024];
-        int recv = 0;
+        int recv;
 
-        recv = server.Receive(data);
-        clientText = clientText += Encoding.ASCII.GetString(data, 0, recv) + "\n";
+        while (true)
+        {
+            try
+            {
+                recv = server.Receive(data);
+                if (recv == 0)
+                    break;
+
+                string receivedMessage = Encoding.ASCII.GetString(data, 0, recv);
+                lock (clientText)
+                {
+                    clientText += receivedMessage + "\n";
+                }
+            }
+            catch (SocketException)
+            {
+                // Handle any socket exceptions (e.g., server disconnect)
+                break;
+            }
+        }
+
+        server.Close();
     }
 
+    // Retrieve the server's IP address from PlayerPrefs (set this in another part of your app)
     public static string GetClientInputIPAddress()
     {
-        return PlayerPrefs.GetString("ServerIP", "No IP");
+        return PlayerPrefs.GetString("ServerIP", "127.0.0.1"); // Default to localhost if no IP is set
     }
-
 }
