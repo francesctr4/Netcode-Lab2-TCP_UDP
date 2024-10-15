@@ -15,11 +15,21 @@ public class ClientTCP : MonoBehaviour
     Socket server;
     string serverIPAddress;
 
+    private string clientName; // Local variable for each client
+
     // Start is called before the first frame update
     void Start()
     {
         UItext = UItextObj.GetComponent<TextMeshProUGUI>();
         serverIPAddress = GetClientInputIPAddress();
+        clientName = GetClientName(); // Set client name for this session
+    }
+
+    // Function to get the client name
+    private string GetClientName()
+    {
+        // You can get this from an input field or generate a random name
+        return PlayerPrefs.GetString("ClientName", "Client" + UnityEngine.Random.Range(1, 1000));
     }
 
     // Update is called once per frame
@@ -69,7 +79,7 @@ public class ClientTCP : MonoBehaviour
     // Sends a custom message to the server
     void SendMessageToServer(string message)
     {
-        byte[] messageBuffer = Encoding.ASCII.GetBytes(PlayerPrefs.GetString("ClientName") + ": " + message);
+        byte[] messageBuffer = Encoding.ASCII.GetBytes(clientName + ": " + message);
         server.Send(messageBuffer);
     }
 

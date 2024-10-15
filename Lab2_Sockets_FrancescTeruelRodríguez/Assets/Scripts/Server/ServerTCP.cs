@@ -60,7 +60,8 @@ public class ServerTCP : MonoBehaviour
             lock (lockObj)
             {
                 connectedUsers.Add(newUser); // Add new user to the list
-                SendMessageFromServer(" -------- USER JOINED -------- ");
+                SendMessageFromServer(" ---- USER JOINED SERVER: " + PlayerPrefs.GetString("ServerName", "...") + " ---- ", false);
+                serverText += " -------- USER JOINED -------- " + "\n";
             }
             Thread clientThread = new Thread(() => Receive(newUser));
             clientThread.Start();
@@ -105,12 +106,16 @@ public class ServerTCP : MonoBehaviour
         }
     }
 
-    public void SendMessageFromServer(string message)
+    public void SendMessageFromServer(string message, bool server = true)
     {
-        lock (lockObj)
+        if (server)
         {
-            serverText += message + "\n";
+            lock (lockObj)
+            {
+                serverText += message + "\n";
+            }
         }
+        
         // Broadcast the message to all connected clients
         foreach (var user in connectedUsers)
         {
