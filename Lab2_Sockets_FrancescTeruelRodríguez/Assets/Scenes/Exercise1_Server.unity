@@ -7270,6 +7270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UItextObj: {fileID: 985855836}
   messageInputField: {fileID: 720146973}
+  UItext: {fileID: 985855839}
 --- !u!135 &903045335
 SphereCollider:
   m_ObjectHideFlags: 0

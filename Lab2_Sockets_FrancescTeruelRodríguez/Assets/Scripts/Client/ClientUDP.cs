@@ -4,22 +4,32 @@ using System.Text;
 using UnityEngine;
 using System.Threading;
 using TMPro;
-using System;
 
 public class ClientUDP : MonoBehaviour
 {
-    Socket server;
+    private Socket server;
     public GameObject UItextObj;
-    TextMeshProUGUI UItext;
-    string clientText;
-    string serverIPAddress;
+    public TMP_InputField messageInputField; // Reference to the input field for sending messages
+    private TextMeshProUGUI UItext;
+    private string clientText = "";
+    private string serverIPAddress;
 
-    // Start is called before the first frame update
+    private string clientName; // Local variable for each client
+
     void Start()
     {
         UItext = UItextObj.GetComponent<TextMeshProUGUI>();
         serverIPAddress = GetClientInputIPAddress();
+        clientName = GetClientName(); // Set client name for this session
     }
+
+    // Function to get the client name
+    private string GetClientName()
+    {
+        // You can get this from an input field or generate a random name
+        return PlayerPrefs.GetString("ClientName", "Client" + UnityEngine.Random.Range(1, 1000));
+    }
+
     public void StartClient()
     {
         Thread mainThread = new Thread(Send);
@@ -28,63 +38,62 @@ public class ClientUDP : MonoBehaviour
 
     void Update()
     {
-        UItext.text = clientText;
+        UItext.text = clientText; // Display received messages
     }
 
     void Send()
     {
-        //TO DO 2
-        //Unlike with TCP, we don't "connect" first,
-        //we are going to send a message to establish our communication so we need an endpoint
-        //We need the server's IP and the port we've binded it to before
-        //Again, initialize the socket
-        
         int port = 9050;
-        string localIP = serverIPAddress;
-        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(localIP), port);
-
+        IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(serverIPAddress), port);
         server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-        //TO DO 2.1 
-        //Send the Handshake to the server's endpoint.
-        //This time, our UDP socket doesn't have it, so we have to pass it
-        //as a parameter on it's SendTo() method
-
-        byte[] data = new byte[1024];
-        string handshake = "Hello World";
-
-        data = Encoding.ASCII.GetBytes(handshake);
-
+        // Send handshake message to the server
+        string handshake = "Connecting...";
+        byte[] data = Encoding.ASCII.GetBytes(handshake);
         server.SendTo(data, data.Length, SocketFlags.None, ipep);
+        Debug.Log("Sent handshake message");
 
-        Debug.Log("sent message");
-
-        //TO DO 5
-        //We'll wait for a server response,
-        //so you can already start the receive thread
-        Thread receive = new Thread(Receive);
-        receive.Start();
-
+        Thread receiveThread = new Thread(Receive);
+        receiveThread.Start();
     }
 
-    //TO DO 5
-    //Same as in the server, in this case the remote is a bit useless
-    //since we already know it's the server who's communicating with us
+    public void OnSendButtonClick()
+    {
+        string message = clientName + ": " + messageInputField.text; // Get the text from the input field
+        if (!string.IsNullOrEmpty(message))
+        {
+            SendMessageToServer(message);
+            messageInputField.text = ""; // Clear the input field after sending
+        }
+    }
+
+    void SendMessageToServer(string message)
+    {
+        byte[] data = Encoding.ASCII.GetBytes(message);
+        IPEndPoint endpoint = new IPEndPoint(IPAddress.Parse(serverIPAddress), 9050);
+        server.SendTo(data, data.Length, SocketFlags.None, endpoint); // Send message to the server
+    }
+
     void Receive()
     {
         IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
-        EndPoint Remote = (EndPoint)(sender);
-
+        EndPoint remote = (EndPoint)(sender);
         byte[] data = new byte[1024];
-        int recv = server.ReceiveFrom(data, ref Remote);
 
-        clientText = clientText += $"Message received from {Remote.ToString()}:" + "\n" + Encoding.ASCII.GetString(data, 0, recv) + "\n";
+        while (true)
+        {
+            int recv = server.ReceiveFrom(data, ref remote);
+            string receivedMessage = Encoding.ASCII.GetString(data, 0, recv);
+            lock (clientText) // Ensure thread safety
+            {
+                clientText += $"{receivedMessage}\n";
+            }
+        }
     }
 
     public static string GetClientInputIPAddress()
     {
         return PlayerPrefs.GetString("ServerIP", "No IP");
     }
-
 }
 

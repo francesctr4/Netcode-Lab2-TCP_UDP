@@ -4,7 +4,6 @@ using System.Text;
 using UnityEngine;
 using System.Threading;
 using TMPro;
-using System;
 
 public class ClientTCP : MonoBehaviour
 {

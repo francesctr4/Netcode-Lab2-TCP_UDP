@@ -5,7 +5,6 @@ using System.Threading;
 using TMPro;
 using System.Text;
 using System.Collections.Generic;
-using static ServerTCP;
 
 public class ServerTCP : MonoBehaviour
 {
