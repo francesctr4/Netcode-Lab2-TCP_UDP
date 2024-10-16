@@ -19,6 +19,9 @@ public class ServerTCP : MonoBehaviour
     List<User> connectedUsers = new List<User>();
     object lockObj = new object();
 
+    private string serverName;
+    private string hostName;
+
     public struct User
     {
         public string name;
@@ -28,6 +31,8 @@ public class ServerTCP : MonoBehaviour
     void Start()
     {
         UItext = UItextObj.GetComponent<TextMeshProUGUI>();
+        serverName = PlayerPrefs.GetString("ServerName", "...");
+        hostName = PlayerPrefs.GetString("HostName");
     }
 
     void Update()
@@ -40,7 +45,7 @@ public class ServerTCP : MonoBehaviour
 
     public void startServer()
     {
-        serverText += " -------- STARTING TCP SERVER: " + PlayerPrefs.GetString("ServerName", "...") + " -------- " + "\n";
+        serverText += " -------- STARTING TCP SERVER: " + serverName + " -------- " + "\n";
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         IPEndPoint ipep = new IPEndPoint(IPAddress.Any, 9050);
         socket.Bind(ipep);
@@ -59,7 +64,7 @@ public class ServerTCP : MonoBehaviour
             lock (lockObj)
             {
                 connectedUsers.Add(newUser); // Add new user to the list
-                SendMessageFromServer(" ---- USER JOINED SERVER: " + PlayerPrefs.GetString("ServerName", "...") + " ---- ", false);
+                SendMessageFromServer(" ---- USER JOINED SERVER: " + serverName + " ---- ", false);
                 serverText += " -------- USER JOINED -------- " + "\n";
             }
             Thread clientThread = new Thread(() => Receive(newUser));
@@ -128,7 +133,7 @@ public class ServerTCP : MonoBehaviour
         string message = messageInputField.text; // Get the message from the input field
         if (!string.IsNullOrEmpty(message))
         {
-            SendMessageFromServer(PlayerPrefs.GetString("HostName") + ": " + message); // Send the message
+            SendMessageFromServer(hostName + ": " + message); // Send the message
             messageInputField.text = ""; // Clear the input field after sending
         }
     }

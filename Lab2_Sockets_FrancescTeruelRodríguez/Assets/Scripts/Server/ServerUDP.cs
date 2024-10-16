@@ -15,7 +15,9 @@ public class ServerUDP : MonoBehaviour
     public TextMeshProUGUI UItext;
 
     private string serverText;
+
     private string serverName;
+    private string hostName;
 
     private Dictionary<IPEndPoint, string> connectedClients = new Dictionary<IPEndPoint, string>(); // Store client IP and names
 
@@ -23,11 +25,12 @@ public class ServerUDP : MonoBehaviour
     {
         UItext = UItextObj.GetComponent<TextMeshProUGUI>();
         serverName = PlayerPrefs.GetString("ServerName", "...");
+        hostName = PlayerPrefs.GetString("HostName", "Server");
     }
 
     public void startServer()
     {
-        serverText += " -------- STARTING UDP SERVER: " + PlayerPrefs.GetString("ServerName", "...") + " -------- " + "\n";
+        serverText += " -------- STARTING UDP SERVER: " + serverName + " -------- " + "\n";
         UItext.text = serverText;
 
         int port = 9050;
@@ -93,7 +96,7 @@ public class ServerUDP : MonoBehaviour
         if (!string.IsNullOrEmpty(message))
         {
             // Send the message to all connected clients
-            SendMessageToAll($"{PlayerPrefs.GetString("HostName", "Server")}: {message}");
+            SendMessageToAll($"{hostName}: {message}");
             messageInputField.text = ""; // Clear the input field after sending
         }
     }
