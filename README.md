@@ -12,7 +12,8 @@
   * It answers with the name of the server.
 * Client scene:
   * Probably named “join game”.
-  * It allows to insert an IP ○ It connects to a server, knowing it’s IP.
+  * It allows to insert an IP.
+  * It connects to a server, knowing it’s IP.
   * It sends a message with the user’s name.
 * Both scenes:
   * Bonus: Lead to a waiting room.
