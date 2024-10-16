@@ -30,13 +30,12 @@ public class SceneSwitcher : MonoBehaviour
         SceneManager.LoadScene(2);
     }
 
-    // Function to be called when the button is pressed
+    // Function to be called when the button exit is pressed
     public void ExitGame()
     {
-        // Exit the application
         Application.Quit();
 
-        // This line is helpful for testing in the Unity editor
+        // For testing in the Unity editor
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif

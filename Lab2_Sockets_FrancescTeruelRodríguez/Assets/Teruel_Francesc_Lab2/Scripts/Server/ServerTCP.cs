@@ -12,7 +12,7 @@ public class ServerTCP : MonoBehaviour
     Thread mainThread = null;
 
     public GameObject UItextObj;
-    public TMP_InputField messageInputField; // Add this for the input field
+    public TMP_InputField messageInputField;
     public TextMeshProUGUI UItext;
 
     string serverText;
@@ -127,10 +127,9 @@ public class ServerTCP : MonoBehaviour
         }
     }
 
-    // Call this function when the send button is clicked
     public void OnSendButtonClick()
     {
-        string message = messageInputField.text; // Get the message from the input field
+        string message = messageInputField.text;
         if (!string.IsNullOrEmpty(message))
         {
             SendMessageFromServer(hostName + ": " + message); // Send the message
@@ -140,7 +139,7 @@ public class ServerTCP : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        StopServer(); // Call the stop server function
+        StopServer();
     }
 
     public void StopServer()

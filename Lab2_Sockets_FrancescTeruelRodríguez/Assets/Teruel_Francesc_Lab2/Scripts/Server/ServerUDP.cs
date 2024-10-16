@@ -11,11 +11,10 @@ public class ServerUDP : MonoBehaviour
     private Socket socket;
 
     public GameObject UItextObj;
-    public TMP_InputField messageInputField; // Reference to the input field for sending messages
+    public TMP_InputField messageInputField;
     public TextMeshProUGUI UItext;
 
     private string serverText;
-
     private string serverName;
     private string hostName;
 
@@ -67,14 +66,12 @@ public class ServerUDP : MonoBehaviour
                 SendMessageToAll($" ---- USER JOINED SERVER: {serverName} ---- ");
             }
 
-            // Process the message (assume it's a chat message)
             ProcessMessage((IPEndPoint)remote, receivedMessage);
         }
     }
 
     void ProcessMessage(IPEndPoint sender, string message)
     {
-        // You can handle specific commands/messages here if needed
         SendMessageToAll($"{message}");
     }
 
@@ -89,10 +86,9 @@ public class ServerUDP : MonoBehaviour
         }
     }
 
-    // Call this function when the send button is clicked
     public void OnSendButtonClick()
     {
-        string message = messageInputField.text; // Get the message from the input field
+        string message = messageInputField.text;
         if (!string.IsNullOrEmpty(message))
         {
             // Send the message to all connected clients
@@ -103,7 +99,7 @@ public class ServerUDP : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        StopServer(); // Call the stop server function
+        StopServer();
     }
 
     public void StopServer()

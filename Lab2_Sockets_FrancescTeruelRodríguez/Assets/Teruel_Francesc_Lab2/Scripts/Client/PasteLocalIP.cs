@@ -11,7 +11,6 @@ public class PasteLocalIP : MonoBehaviour
     private string localIPAddress;
     public TMP_InputField IPInputText;
 
-    // Start is called before the first frame update
     void Start()
     {
         localIPAddress = GetLocalIPAddress();
@@ -27,7 +26,7 @@ public class PasteLocalIP : MonoBehaviour
         var host = Dns.GetHostEntry(Dns.GetHostName());
         foreach (var ip in host.AddressList)
         {
-            // We are looking for an IPv4 address (since most networks use IPv4)
+            // We are looking for an IPv4 address, since most networks use IPv4.
             if (ip.AddressFamily == AddressFamily.InterNetwork)
             {
                 return ip.ToString();

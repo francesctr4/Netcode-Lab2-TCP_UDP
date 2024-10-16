@@ -53,7 +53,6 @@ public class PlayerController : MonoBehaviour
 
         }
 
-
         this.gameObject.GetComponent<Rigidbody>().velocity = speed;
 
         if (speed != Vector3.zero)
@@ -79,30 +78,23 @@ public class PlayerController : MonoBehaviour
                 tcpConsole.SetActive(!tcpConsole.activeSelf);
             }
         }
-
-
     }
 
     private void OnTriggerEnter(Collider other)
     {
-
         if (other.gameObject.CompareTag("Computer1"))
         {
             newarCPU = true;
         }
-     
     }
+
     private void OnTriggerExit(Collider other)
     {
-
         if (other.gameObject.CompareTag("Computer1"))
         {
             newarCPU = false;
             udpConsole.SetActive(false);
             tcpConsole.SetActive(false);
         }
-
     }
 }
-
-

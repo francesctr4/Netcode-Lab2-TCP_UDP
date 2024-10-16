@@ -10,17 +10,17 @@ using UnityEngine.UI;
 
 public class SaveServerData : MonoBehaviour
 {
-    public TMP_InputField hostNameInput; // Reference to the TextMesh Pro input field
-    public TMP_InputField serverNameInput; // Reference to the TextMesh Pro input field
+    public TMP_InputField hostNameInput;
+    public TMP_InputField serverNameInput; 
 
-    public void OnCreateServerButtonPressed() // This should be called when the connect button is pressed
+    public void OnCreateServerButtonPressed()
     {
         string hostName = hostNameInput.text;
-        string serverName = serverNameInput.text; // Get the server name from the input field
+        string serverName = serverNameInput.text;
 
-        PlayerPrefs.SetString("HostName", hostName); // Save the server name for later use
-        PlayerPrefs.SetString("ServerName", serverName); // Save the server name for later use
-        PlayerPrefs.SetString("ServerIP", GetLocalIPAddress()); // Save the server name for later use
+        PlayerPrefs.SetString("HostName", hostName); 
+        PlayerPrefs.SetString("ServerName", serverName); 
+        PlayerPrefs.SetString("ServerIP", GetLocalIPAddress());
 
         PlayerPrefs.Save(); // Make sure to save the PlayerPrefs
     }
@@ -30,7 +30,7 @@ public class SaveServerData : MonoBehaviour
         var host = Dns.GetHostEntry(Dns.GetHostName());
         foreach (var ip in host.AddressList)
         {
-            // We are looking for an IPv4 address (since most networks use IPv4)
+            // We are looking for an IPv4 address, since most networks use IPv4.
             if (ip.AddressFamily == AddressFamily.InterNetwork)
             {
                 return ip.ToString();

@@ -9,12 +9,12 @@ public class ClientUDP : MonoBehaviour
 {
     private Socket server;
     public GameObject UItextObj;
-    public TMP_InputField messageInputField; // Reference to the input field for sending messages
+    public TMP_InputField messageInputField;
     private TextMeshProUGUI UItext;
+
     private string clientText = "";
     private string serverIPAddress;
-
-    private string clientName; // Local variable for each client
+    private string clientName;
 
     void Start()
     {
@@ -47,7 +47,7 @@ public class ClientUDP : MonoBehaviour
         IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(serverIPAddress), port);
         server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-        // Send handshake message to the server
+        // Send UDP handshake message to the server
         string handshake = "Connecting...";
         byte[] data = Encoding.ASCII.GetBytes(handshake);
         server.SendTo(data, data.Length, SocketFlags.None, ipep);
