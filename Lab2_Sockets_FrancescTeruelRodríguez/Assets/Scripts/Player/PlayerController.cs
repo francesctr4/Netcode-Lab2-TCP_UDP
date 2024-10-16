@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
@@ -21,6 +23,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Check if the user is focused on a UI input field
+        bool isTypingInInputField = EventSystem.current.currentSelectedGameObject != null &&
+                                    EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
+
         Vector3 speed = new Vector3(0, this.gameObject.GetComponent<Rigidbody>().velocity.y, 0);
         if (Input.GetKey("d") && udpConsole.activeSelf == false && tcpConsole.activeSelf == false)
         {
@@ -57,15 +63,21 @@ public class PlayerController : MonoBehaviour
         }
         else { animator.SetBool("isWalking", false); }
 
-        if (newarCPU && Input.GetKeyDown(KeyCode.U))
+        if (newarCPU && Input.GetKeyDown(KeyCode.U) && !isTypingInInputField)
         {
-            udpConsole.SetActive(!udpConsole.activeSelf);
-
+            // Check if the TCP console is active before toggling the UDP console
+            if (!tcpConsole.activeSelf)
+            {
+                udpConsole.SetActive(!udpConsole.activeSelf);
+            }
         }
-        if (newarCPU && Input.GetKeyDown(KeyCode.T))
+        if (newarCPU && Input.GetKeyDown(KeyCode.T) && !isTypingInInputField)
         {
-            tcpConsole.SetActive(!tcpConsole.activeSelf);
-
+            // Check if the UDP console is active before toggling the TCP console
+            if (!udpConsole.activeSelf)
+            {
+                tcpConsole.SetActive(!tcpConsole.activeSelf);
+            }
         }
 
 
