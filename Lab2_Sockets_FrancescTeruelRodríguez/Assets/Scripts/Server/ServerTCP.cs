@@ -137,4 +137,38 @@ public class ServerTCP : MonoBehaviour
             messageInputField.text = ""; // Clear the input field after sending
         }
     }
+
+    void OnApplicationQuit()
+    {
+        StopServer(); // Call the stop server function
+    }
+
+    public void StopServer()
+    {
+        // Stop listening for new connections
+        if (socket != null)
+        {
+            socket.Close();
+        }
+
+        // Stop the main thread
+        if (mainThread != null && mainThread.IsAlive)
+        {
+            mainThread.Abort();
+        }
+
+        lock (lockObj)
+        {
+            foreach (var user in connectedUsers)
+            {
+                if (user.socket != null)
+                {
+                    user.socket.Close(); // Close each user's socket
+                }
+            }
+            connectedUsers.Clear();
+        }
+
+        serverText += " -------- SERVER SHUT DOWN -------- " + "\n";
+    }
 }

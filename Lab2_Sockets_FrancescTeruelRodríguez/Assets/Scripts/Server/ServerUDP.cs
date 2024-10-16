@@ -100,4 +100,22 @@ public class ServerUDP : MonoBehaviour
             messageInputField.text = ""; // Clear the input field after sending
         }
     }
+
+    void OnApplicationQuit()
+    {
+        StopServer(); // Call the stop server function
+    }
+
+    public void StopServer()
+    {
+        // Close the UDP socket
+        if (socket != null)
+        {
+            socket.Close();
+            socket = null;
+        }
+
+        serverText += " -------- UDP SERVER SHUT DOWN -------- " + "\n";
+    }
+
 }
